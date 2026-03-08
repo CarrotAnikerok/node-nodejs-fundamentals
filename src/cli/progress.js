@@ -1,32 +1,56 @@
-import readline from 'node:readline';
-import { stdin, stdout } from 'node:process';
-import { styleText } from 'node:util';
-
+/**
+ * Parameters example: --duration 1000 --interval 10 --length 10 --color '#72F160'
+ */
 const progress = () => {
-    // Write your code here
-    // Simulate progress bar from 0% to 100% over ~5 seconds
-    // Update in place using \r every 100ms
-    // Format: [████████████████████          ] 67%
-
     const args = process.argv.slice(2);
+    const progressBarParameters = {
+        duration: 5000,
+        interval: 100,
+        length: 30,
+        color: 'no color',
+    };
 
-    const duration = 5000;
-    const interval = 100;
-    const length = 30;
-    const color = '';
+    for (let i = 0; i < args.length; i++) {
+        if (args[i].startsWith('--') && i + 1 < args.length && !args[i+1].startsWith('--')) {
+            if (args[i].slice(2) === 'color') {
+                progressBarParameters[args[i].slice(2)] = args[i+1];
+                continue;
+            }
+            progressBarParameters[args[i].slice(2)] = parseInt(args[i+1]);
+        }
+    }
 
-    //console.log(styleText('#BE42EB', 'hiii'));
+    let timePassed = 0;
+    const {duration, interval, length, color} = progressBarParameters;
+    const timer = setInterval(() => {
+        updateProgressbar(timePassed, duration, length, color);
+        timePassed += interval;
 
-    const hex = '76A027';
-
-    console.log(setHexColor('#AB1E1C', 'HI CARROT IM RED'));
-    console.log(setHexColor('#2271A5', 'HI CARROT IM NOT'));
-    console.log(setHexColor('#DDFE25', 'HI CARROT IM NOT TOO'));
-    console.log(setHexColor('#BE42EB', '█'));
+        if (timePassed >= duration + interval) {
+            clearInterval(timer);
+            console.log('\nDone!');
+        }
+    }, interval)
 };
 
 progress();
 
+function updateProgressbar(lasted, duration, length, color) {
+    const percentLasted = lasted/duration;
+    const filledPartCount = Math.ceil(percentLasted * length);
+    let filledPart = '█'.repeat(filledPartCount);
+
+    if (color != 'no color') {
+        filledPart = setHexColor(color, filledPart);
+    }
+
+    const emptyPart = ' '.repeat((1 - percentLasted) * length);
+    updateLine(`[${filledPart}${emptyPart}] ${Math.ceil(100 * percentLasted)}%`);
+}
+
+function updateLine(line) {
+    process.stdout.write(`\r${line}`);
+}
 
 function setHexColor(hex, text) {
     const hexColor = hex.replace(/^#/, '');
