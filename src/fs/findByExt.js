@@ -3,8 +3,9 @@ import path from 'node:path';
 
 const findByExt = async () => {
     const args = process.argv.slice(2);
-    let extension;
     const flagIndex = args.indexOf('--ext');
+
+    let extension;
 
     if (flagIndex !== '-1' && args.length > flagIndex + 1) {
         extension = '.' + args[flagIndex + 1];
