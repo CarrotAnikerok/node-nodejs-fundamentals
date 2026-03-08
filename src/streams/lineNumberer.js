@@ -1,4 +1,3 @@
-import os from 'node:os'
 import { Transform } from 'node:stream';
 
 class TransformLines extends Transform  {
@@ -6,8 +5,8 @@ class TransformLines extends Transform  {
     chunkLeft = '';
     
 
-    constructor(options) {
-        super(options);
+    constructor() {
+        super();
     }
 
     _transform(chunk, encoding, callback) {
@@ -32,6 +31,7 @@ class TransformLines extends Transform  {
 }
 
 const lineNumberer = () => {
+    
     const transform = new TransformLines();
 
     process.stdin.pipe(transform).pipe(process.stdout);
