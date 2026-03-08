@@ -8,15 +8,15 @@ const interactive = () => {
     rl.prompt();
 
     rl.on('line', (userInput => {
-            switch (userInput) {
+            switch (userInput.trim()) {
                 case 'uptime':
-                    console.log(process.uptime());
+                    console.log(`Uptime: ${process.uptime().toFixed(2)}s`);
                     break;
                 case 'cwd':
                     console.log(process.cwd());
                     break;
                 case 'date':
-                    console.log(new Date());
+                    console.log(new Date().toISOString());
                     break;
                 case 'exit':
                     rl.close();
@@ -31,8 +31,12 @@ const interactive = () => {
     );
 
     rl.on('close', () => {
-        console.log('Goodbye!');
+        console.log('\nGoodbye!');
     });
+
+    rl.on('SIGINT', () => {
+        rl.close();
+    })
 };
 
 interactive();
